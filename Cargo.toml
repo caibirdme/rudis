@@ -1,0 +1,13 @@
+[package]
+name = "rudis"
+version = "0.1.0"
+authors = ["caibirdme <englanq@126.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-std = "1.6.3"
+nom = "6.0.0-alpha1"
+anyhow = "1.0.32"
+thiserror = "1.0.20"
