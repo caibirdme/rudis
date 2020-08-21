@@ -1,5 +1,5 @@
 ### rudis
-rudis is a tool redis implementation written by rust.
+rudis is a toy redis implementation written in rust.
 
 Just for practice!
 
