@@ -7,7 +7,8 @@ use nom::{
     character::complete::{char, crlf},
     multi::many_m_n,
 };
-use anyhow::Result;
+use anyhow::{Result, bail};
+use thiserror::Error;
 use std::str::{from_utf8};
 
 #[derive(Debug, Eq, PartialEq)]
@@ -17,6 +18,52 @@ pub enum RESPType {
     Integer(i64),
     BulkStr(Option<Vec<u8>>),
     Arr(Option<Vec<RESPType>>),
+}
+
+#[derive(Error, Debug)]
+pub enum ConvertErr {
+    #[error("not string type")]
+    NotStr,
+    #[error("not int type")]
+    NotInt,
+    #[error("empty array")]
+    EmptyArr,
+    #[error("not array type")]
+    NotArr,
+}
+
+impl RESPType {
+    pub fn get_string(&self) -> Result<&str> {
+        match self {
+            RESPType::Str(v) => Ok(v),
+            RESPType::BulkStr(v) => {
+                if let Some(v) = v {
+                    Ok(from_utf8(v)?)
+                } else {
+                    bail!(ConvertErr::NotStr);
+                }
+            },
+            _ => bail!(ConvertErr::NotStr)
+        }
+    }
+    pub fn get_int(&self) -> Result<i64> {
+        if let &RESPType::Integer(v) = self {
+            Ok(v)
+        } else {
+            bail!(ConvertErr::NotInt)
+        }
+    }
+    pub fn to_arr(&self) -> Result<&Vec<RESPType>> {
+        if let RESPType::Arr(arr) = self {
+            if let Some(arr) = arr {
+                if arr.is_empty() {
+                    bail!(ConvertErr::EmptyArr);
+                }
+                return Ok(arr);
+            }
+        }
+        Err(ConvertErr::NotArr.into())
+    }
 }
 
 fn ps(c: char) -> impl FnMut(&[u8]) -> IResult<&[u8], String> {

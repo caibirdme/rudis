@@ -5,7 +5,7 @@ Just for practice!
 
 ### todos
 - [x] redis protocol parser
-- [ ] command prepare
+- [x] command prepare
 - [ ] async core server
 - [ ] dict
 - [ ] hash
